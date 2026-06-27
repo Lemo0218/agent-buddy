@@ -1,0 +1,6 @@
+.pio/
+**/__pycache__/
+*.pyc
+.DS_Store
+*.bak-buddy
+buddy_sessions.json
