@@ -224,8 +224,6 @@ void drawEyes(BuddyMood m, const Theme& t, int dy, bool blink) {
 void drawCheeksMouth(BuddyMood m, const Theme& t, int dy) {
   int cx = CX + g_ox;
   int my = 192 + dy;
-  T->fillEllipse(cx-64, my-14, 16, 9, CHEEK);
-  T->fillEllipse(cx+64, my-14, 16, 9, CHEEK);
   switch (m) {
     case BuddyMood::Happy:                                   // big open grin (reference)
       T->fillArc(cx, my, 27, 0,  8, 172, MOUTH_D);
@@ -371,8 +369,7 @@ void drawTiredFace(int level, const Theme& t, int dy) {
   T->fillEllipse(lx, ey+4, 13, 10, OUTLN); T->fillEllipse(rx, ey+4, 13, 10, OUTLN);
   T->fillRoundRect(lx-15, ey-6, 30, 6, 3, OUTLN); T->fillRoundRect(rx-15, ey-6, 30, 6, 3, OUTLN);
   T->fillCircle(cx-9, ey+30, 2, OUTLN); T->fillCircle(cx+9, ey+30, 2, OUTLN);
-  // cheeks + panting mouth
-  T->fillEllipse(cx-64, my-14, 16, 9, CHEEK); T->fillEllipse(cx+64, my-14, 16, 9, CHEEK);
+  // panting mouth
   T->fillArc(cx, my, 15, 0, 10, 170, MOUTH_D); T->fillArc(cx, my, 11, 0, 18, 162, MOUTH_R);
   // sweat drops (more with fatigue), animated downward
   int drops = level >= 85 ? 3 : (level >= 70 ? 2 : 1);
@@ -390,36 +387,47 @@ void drawTiredFace(int level, const Theme& t, int dy) {
 }
 
 // ---- multi-session "world" view: a grid of rooms, one mini dino each ----
-// a little dino doing its activity, standing on the soil at gy
-void drawMiniDino(int cx, int gy, uint8_t st, uint32_t now, int idx) {
-  int bob = (st==1) ? (int)(2*sinf(now/130.0f+idx))            // working: lively
-          : (st==2) ? (int)(3*fabsf(sinf(now/150.0f+idx)))     // waiting: hops
-          : 0;
-  int by = gy - 17 + bob;
-  T->fillEllipse(cx, by, 16, 15, OUTLN);
-  T->fillEllipse(cx, by, 14, 13, DINO);
-  T->fillEllipse(cx-5, by-3, 6, 5, 0xC4E8C4);                   // highlight
-  T->fillCircle(cx-2, by-13, 4, DINO_DK); T->fillCircle(cx+8, by-10, 3, DINO_DK);  // spikes
-  T->fillEllipse(cx, by+6, 7, 5, BELLY);
+// a dino on the soil at gy; it grows up (legs -> arms -> bigger) as that
+// session accumulates context/usage (grow 0..100). st = activity.
+void drawMiniDino(int cx, int gy, uint8_t st, int grow, uint32_t now, int idx) {
+  int stage = grow >= 70 ? 3 : grow >= 40 ? 2 : grow >= 15 ? 1 : 0;
+  const int R[4] = {11,13,15,17}, LEG[4] = {0,4,6,8};
+  int r = R[stage], legLen = LEG[stage];
+  const uint32_t MOUTH = 0x4A3328;                             // brown (no red)
+  int bob = (st==1) ? (int)(2*sinf(now/130.0f+idx))
+          : (st==2) ? (int)(3*fabsf(sinf(now/150.0f+idx))) : 0;
+  int by = gy - legLen - r + bob;
+  if (stage >= 1) {                                            // legs
+    T->fillRect(cx-5, by+r-1, 3, legLen+2, DINO_DK);
+    T->fillRect(cx+2, by+r-1, 3, legLen+2, DINO_DK);
+  }
+  if (stage >= 2) {                                            // arms
+    T->fillEllipse(cx-r-1, by+1, 4, 6, OUTLN); T->fillEllipse(cx-r-1, by+1, 3, 5, DINO);
+    T->fillEllipse(cx+r+1, by+1, 4, 6, OUTLN); T->fillEllipse(cx+r+1, by+1, 3, 5, DINO);
+  }
+  T->fillEllipse(cx, by, r+1, r, OUTLN);                       // body
+  T->fillEllipse(cx, by, r-1, r-2, DINO);
+  T->fillCircle(cx-2, by-r+1, 3, DINO_DK);                     // spikes (more w/ stage)
+  T->fillCircle(cx+r/2, by-r+3, 3, DINO_DK);
+  if (stage >= 2) T->fillCircle(cx+r-2, by-r+6, 2, DINO_DK);
   int ey = by - 2;
-  if (st == 0) {                                                // idle / resting
+  if (st == 0) {                                               // idle
     T->fillRoundRect(cx-7, ey, 5, 2, 1, OUTLN); T->fillRoundRect(cx+2, ey, 5, 2, 1, OUTLN);
-    T->fillRect(cx-2, by+4, 4, 2, MOUTH_D);
-    if ((now/500+idx)%2) { T->setTextColor(0xCFE0F0); T->setTextSize(1); T->setCursor(cx+11, by-16); T->print('z'); }
+    T->fillRect(cx-2, by+4, 4, 2, MOUTH);
+    if ((now/500+idx)%2) { T->setTextColor(0xCFE0F0); T->setTextSize(1); T->setCursor(cx+r, by-r-2); T->print('z'); }
   } else {
     T->fillCircle(cx-5, ey, 2, OUTLN); T->fillCircle(cx+5, ey, 2, OUTLN);
-    T->fillCircle(cx-9, by+2, 2, CHEEK); T->fillCircle(cx+9, by+2, 2, CHEEK);
-    if (st == 3) T->fillArc(cx, by+2, 7, 5, 20, 160, MOUTH_D);  // done: smile
-    else         T->fillRect(cx-2, by+4, 5, 2, MOUTH_D);
+    if (st == 3) T->fillArc(cx, by+2, 7, 5, 20, 160, MOUTH);
+    else         T->fillRect(cx-2, by+4, 5, 2, MOUTH);
   }
-  if (st == 1) {                                                // working: sprout grows + dust
+  if (st == 1) {                                               // working: sprout + dust
     int gh = 3 + (int)(3*(0.5f+0.5f*sinf(now/600.0f+idx)));
-    T->drawLine(cx+13, gy, cx+13, gy-gh, SPROUT); T->fillCircle(cx+13, gy-gh, 2, SPROUT);
-    if ((now/130+idx)%3==0) T->fillCircle(cx-12, gy-1, 1, 0xC8BEA0);
-  } else if (st == 2) {                                         // waiting: ! bubble + bell
+    T->drawLine(cx+r+1, gy, cx+r+1, gy-gh, SPROUT); T->fillCircle(cx+r+1, gy-gh, 2, SPROUT);
+    if ((now/130+idx)%3==0) T->fillCircle(cx-r-1, gy-1, 1, 0xC8BEA0);
+  } else if (st == 2) {                                        // waiting: ! bubble
     int b2 = (int)(2*sinf(now/150.0f));
-    T->fillCircle(cx, by-22+b2, 5, 0xFFFFFF); T->drawCircle(cx, by-22+b2, 5, OUTLN);
-    T->setTextColor(0xE69020); T->setTextSize(1); T->setCursor(cx-1, by-25+b2); T->print('!');
+    T->fillCircle(cx, by-r-7+b2, 5, 0xFFFFFF); T->drawCircle(cx, by-r-7+b2, 5, OUTLN);
+    T->setTextColor(0xE69020); T->setTextSize(1); T->setCursor(cx-1, by-r-10+b2); T->print('!');
   }
 }
 
@@ -443,6 +451,50 @@ void drawSky(uint32_t now) {
          } }
 }
 
+// the village landscape: sky + clouds + hills + grass + well/tree/fence,
+// all tinted toward dusk as the 5h window (g_resetPct) elapses.
+void drawScene(uint32_t now) {
+  drawSky(now);
+  float e = (g_resetPct < 0) ? 0.25f : g_resetPct/100.0f;
+  uint32_t cl = lerpC(0xEEF4FB, 0x39405E, e);
+  T->fillCircle(42,26,6,cl); T->fillCircle(53,26,8,cl); T->fillCircle(63,28,6,cl);
+  T->fillCircle(176,44,6,cl); T->fillCircle(187,44,8,cl);
+  uint32_t far = lerpC(0x4E7E54, 0x223040, e);                 // distant hills
+  T->fillEllipse(55,128,130,42,far); T->fillEllipse(195,132,120,40,far);
+  int gy = 116;                                                // foreground grass
+  uint32_t grass = lerpC(0x5AA052, 0x24302A, e), edge = lerpC(0x73C067, 0x32402F, e);
+  T->fillRect(0, gy, W, H-gy, grass);
+  T->fillRect(0, gy, W, 3, edge);
+  for (int i=0;i<70;i++){ int gx=(i*53+9)%W, gyy=gy+6+((i*37)%(H-gy-36)); T->drawPixel(gx,gyy,edge); }
+  // well — water level shows 5h budget remaining
+  { int wx=22, wy=150; float left=(g_resetMin>=0)?(g_resetMin/300.0f):0.5f; left=left<0?0:(left>1?1:left);
+    T->fillRect(wx-11,wy,22,20,0x6E6E7A); T->fillRect(wx-9,wy+2,18,16,0x222230);
+    int wl=(int)(14*left); T->fillRect(wx-8,wy+16-wl,16,wl,0x2F8FB0);
+    T->fillTriangle(wx-13,wy,wx+13,wy,wx,wy-11,0x8C5A38); }
+  { int tx=220, ty=132; T->fillRect(tx-2,ty,4,22,0x6B4A2F);    // tree
+    uint32_t lv=lerpC(0x3E7A44,0x223A2A,e);
+    T->fillCircle(tx,ty-4,13,lv); T->fillCircle(tx-8,ty+2,9,lv); T->fillCircle(tx+8,ty+2,9,lv); }
+  { int fy=H-46; for(int x=2;x<W;x+=13) T->fillRect(x,fy,3,14,0xC4A476); T->fillRect(0,fy+4,W,2,0xA88E60); }
+}
+
+// one session as a dino standing on a garden plot, with a wooden sign
+void drawPlot(int cx, int feetY, const WorldRoom& rm, uint32_t now, int idx) {
+  T->fillEllipse(cx, feetY+2, 17, 5, 0x5C402C);                // soil bed
+  if (rm.st==2 && (now/350)%2) T->drawCircle(cx, feetY-18, 24, ALERT_C);  // waiting glow
+  drawMiniDino(cx, feetY, rm.st, rm.fill, now, idx);          // grows with usage
+  int sy = feetY + 6;                                          // wooden sign w/ name
+  T->fillRect(cx-26, sy, 52, 10, 0xC4A476); T->drawRect(cx-26, sy, 52, 10, 0x7A5C38);
+  T->setTextDatum(lgfx::middle_center); T->setTextSize(1); T->setTextColor(0x3A2A18);
+  T->drawString(rm.label, cx, sy+4);
+  // per-session usage: clear $ number + bar
+  char cs[12]; snprintf(cs, sizeof cs, "$%.0f", rm.cost);
+  T->setTextColor(0xF2F8FC); T->drawString(cs, cx, sy+17);
+  T->setTextDatum(lgfx::top_left);
+  int uw = 52 * (rm.fill>100?100:rm.fill) / 100;
+  T->fillRect(cx-26, sy+23, 52, 3, 0x2A2F3A);
+  if (uw>0) T->fillRect(cx-26, sy+23, uw, 3, gaugeCol(rm.fill));
+}
+
 // one garden plot / room = one session, drawn on the village sky
 void drawRoom(int x, int y, int w, int h, const WorldRoom& rm, uint32_t now, int idx) {
   bool wait = (rm.st == 2);
@@ -454,7 +506,7 @@ void drawRoom(int x, int y, int w, int h, const WorldRoom& rm, uint32_t now, int
   int floorY = y+h-9;                                          // soil floor
   T->fillRect(x+3, floorY, w-6, 6, 0x5C402C);
   for (int sx = x+5; sx < x+w-4; sx += 5) T->drawPixel(sx, floorY+2, 0x76563A);
-  drawMiniDino(x+w/2, floorY, rm.st, now, idx);
+  drawMiniDino(x+w/2, floorY, rm.st, rm.fill, now, idx);
   T->setTextColor(0xDCE4EE); T->setTextDatum(lgfx::top_left); T->setTextSize(1);
   T->drawString(rm.label, x+5, y+5);
   int uw = (w-10) * (rm.fill > 100 ? 100 : rm.fill) / 100;     // per-session usage bar
@@ -494,13 +546,25 @@ void drawVillageHUD(uint32_t now) {
   }
 }
 
-// 2+ sessions: the village — a plot per session
+// the village — dinos tending plots on the hillside (home dino if no sessions)
 void renderWorld(uint32_t now) {
-  drawSky(now);
-  int n = g_numRooms, cols = 2, rows = (n + 1) / 2;
-  int top = 22, hud = 30, areaH = H - top - hud, cw = W / cols, ch = areaH / rows;
-  for (int i = 0; i < n; ++i)
-    drawRoom((i % cols) * cw, top + (i / cols) * ch, cw, ch, g_rooms[i], now, i);
+  drawScene(now);
+  int n = (now - g_worldMs < 90000) ? g_numRooms : 0;
+  if (n <= 0) {
+    WorldRoom home{}; home.st = 0; home.fill = 0; home.cost = 0;
+    strncpy(home.label, "home", sizeof home.label);
+    drawPlot(W/2, 196, home, now, 0);
+  } else {
+    int rows = (n <= 3) ? 1 : 2;
+    int perRow = (n + rows - 1) / rows;
+    for (int i = 0; i < n; ++i) {
+      int row = i / perRow, col = i % perRow;
+      int cnt = (row == rows-1) ? (n - perRow*row) : perRow;
+      int cw = W / cnt, cx = col * cw + cw/2;
+      int feetY = (rows == 1) ? 196 : (row == 0 ? 168 : 248);
+      drawPlot(cx, feetY, g_rooms[i], now, i);
+    }
+  }
   drawVillageHUD(now);
   if (useSprite) canvas.pushSprite(0, 0);
 }
@@ -525,57 +589,8 @@ const char* idleMessage() {
 }
 
 void renderFrame(const BuddyEvent& ev, uint32_t now) {
-  // Multi-session world view takes over when 2+ sessions are active.
-  if (g_numRooms >= 2 && now - g_worldMs < 90000) { renderWorld(now); return; }
-
-  // Faint overrides everything until a new egg is hatched.
-  if (g_pet.life == PetLife::Faint) {
-    drawFaint(themeFor(BuddyMood::Sleepy), now);
-    if (useSprite) canvas.pushSprite(0, 0);
-    return;
-  }
-
-  bool idle = (ev.state == BuddyState::Idle);
-  BuddyMood mood = idle ? g_petMood : ev.mood;
-  bool petSleep = (g_pet.life == PetLife::Sleeping);
-  Theme t = themeFor(petSleep ? BuddyMood::Sleepy : mood);
-  bool busy = (ev.state==BuddyState::Thinking||ev.state==BuddyState::Coding||
-               ev.state==BuddyState::Testing ||ev.state==BuddyState::Starting);
-  int dy = (int)(3.0f * sinf(breathe));     // idle breathing
-  g_ox = 0;                                  // motion offsets
-  if (now < effectUntil) {
-    if (ev.state == BuddyState::Error) g_ox = (int)(5 * sinf(now * 0.05f));         // shake
-    else if (ev.state==BuddyState::Done || ev.state==BuddyState::React)
-      dy -= (int)(9 * fabsf(sinf(now * 0.018f)));                                   // bounce
-  }
-
-  drawSky(now);                                      // same village sky as the rooms view
-
-  drawHead(t, dy);                                   // body + spikes + belly
-  drawBody(t, dy);                                   // arms
-  bool blink = (now < blinkUntil);
-  bool tired = idle && !petSleep && g_pet.life == PetLife::Ok &&
-               g_usageValid && g_usagePct >= 55;
-  if (tired) {
-    drawTiredFace(g_usagePct, t, dy);                // worn out from a busy day
-  } else {
-    drawEyes(mood, t, dy, blink || petSleep);
-    drawCheeksMouth(petSleep ? BuddyMood::Sleepy : mood, t, dy);
-  }
-
-  if (petSleep) drawZzz(t, now);
-  if (busy) drawSpinner(t, now);
-  if (ev.state==BuddyState::Error || (idle && g_pet.life==PetLife::Sick)) drawSweat(t, now);
-  if ((ev.state==BuddyState::Done || ev.state==BuddyState::React) && now < effectUntil) drawConfetti();
-
-  const char* txt = nullptr;
-  if (idle) txt = idleMessage();
-  else if (ev.text.length()) txt = ev.text.c_str();
-  drawBubble(t, txt);
-
-  drawVillageHUD(now);                                // same bottom HUD as the rooms view
-
-  if (useSprite) canvas.pushSprite(0, 0);
+  (void)ev;                  // the village is the single, unified view
+  renderWorld(now);
 }
 }  // namespace
 
