@@ -571,18 +571,54 @@ void drawVillageHUD(uint32_t now) {
   }
 }
 
+// Map BuddyState to sprite state index
+static uint8_t stateToSprite(uint8_t st) {
+  // st: 0=idle,1=working(coding),2=waiting(talking),3=done(success)
+  switch (st) {
+    case 1:  return SPRITE_ST_CODING;
+    case 2:  return SPRITE_ST_TALKING;
+    case 3:  return SPRITE_ST_SUCCESS;
+    default: return SPRITE_ST_IDLE;
+  }
+}
+
+// Draw a single featured sprite dino with its session info
+static void drawFeaturedDino(const WorldRoom& rm, uint32_t now) {
+  uint8_t sIdx = stateToSprite(rm.st);
+  uint8_t fr   = spriteFrame(sIdx, now);
+  blitSprite(W/2, 175, sIdx, fr);
+
+  // session label + token count below sprite
+  T->setTextDatum(lgfx::middle_center);
+  T->setTextColor(0xA8D8A6); T->setTextSize(1);
+  char lbl[24];
+  if (rm.label[0]) snprintf(lbl, sizeof lbl, "%s", rm.label);
+  else             snprintf(lbl, sizeof lbl, "session");
+  T->drawString(lbl, W/2, 232);
+
+  // token count
+  char tok[16];
+  if      (rm.tok >= 1000000) snprintf(tok, sizeof tok, "%.1fM tok", rm.tok/1e6f);
+  else if (rm.tok >= 1000)    snprintf(tok, sizeof tok, "%.0fk tok", rm.tok/1e3f);
+  else if (rm.tok > 0)        snprintf(tok, sizeof tok, "%lu tok", rm.tok);
+  else                        tok[0] = '\0';
+  if (tok[0]) { T->setTextColor(0x689A6A); T->drawString(tok, W/2, 244); }
+
+  T->setTextDatum(lgfx::top_left);
+}
+
 // the village — dinos tending plots on the hillside (home dino if no sessions)
 void renderWorld(uint32_t now) {
   drawScene(now);
   int n = (now - g_worldMs < 90000) ? g_numRooms : 0;
   if (n <= 0) {
-    // No active sessions — featured sprite dino in the scene
-    uint8_t sIdx = SPRITE_ST_IDLE;
-    uint8_t fr   = spriteFrame(sIdx, now);
-    blitSprite(W/2, 178, sIdx, fr);
-    T->setTextColor(0x689A6A); T->setTextDatum(lgfx::middle_center); T->setTextSize(1);
-    T->drawString("Sprout Hollow", W/2, 240);
-    T->setTextDatum(lgfx::top_left);
+    // No sessions — idle sprite dino
+    WorldRoom home{}; home.st = 0;
+    strncpy(home.label, "Sprout Hollow", sizeof home.label);
+    drawFeaturedDino(home, now);
+  } else if (n == 1) {
+    // Single session — featured large sprite
+    drawFeaturedDino(g_rooms[0], now);
   } else {
     int rows = (n <= 3) ? 1 : 2;
     int perRow = (n + rows - 1) / rows;
