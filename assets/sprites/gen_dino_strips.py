@@ -137,23 +137,29 @@ def dino_frame(draw, ox, oy, state, frame_idx, total_frames):
         draw.arc([head_cx-6, head_cy+8, head_cx+6, head_cy+15],
                  start=10, end=170, fill=C_OUTLN, width=2)
 
-    # --- tail ---
+    # --- tail (compact rounded stub — stays above feet, curves right not down) ---
+    # Old tail extended 18 px past body and 6 px BELOW feet (y=92). This one
+    # peaks at y=64 (22 px above feet) and extends only 14 px past body edge.
+    tx = body_cx + bw - 2   # 68 — anchors at right body edge
+    ty = body_cy + 16        # 74 — lower body, well above feet (86)
     tail_pts = [
-        (body_cx+bw-2, body_cy+6),
-        (body_cx+bw+10, body_cy+bh-6),
-        (body_cx+bw+18, body_cy+bh+4),
-        (body_cx+bw+14, body_cy+bh+6),
-        (body_cx+bw+6,  body_cy+bh-2),
-        (body_cx+bw+2,  body_cy+6),
+        (tx,      ty - 5),   # 68, 69  base-top
+        (tx + 5,  ty - 10),  # 73, 64  upper curve
+        (tx + 12, ty - 7),   # 80, 67  tip-top
+        (tx + 14, ty),       # 82, 74  tip-outer
+        (tx + 12, ty + 7),   # 80, 81  tip-bottom
+        (tx + 5,  ty + 6),   # 73, 80  lower curve
+        (tx,      ty + 5),   # 68, 79  base-bottom
     ]
     draw.polygon(tail_pts, fill=C_OUTLN)
     inner_tail = [
-        (body_cx+bw-1, body_cy+7),
-        (body_cx+bw+9, body_cy+bh-5),
-        (body_cx+bw+14, body_cy+bh+3),
-        (body_cx+bw+11, body_cy+bh+4),
-        (body_cx+bw+5,  body_cy+bh-3),
-        (body_cx+bw+3,  body_cy+7),
+        (tx + 1,  ty - 4),
+        (tx + 5,  ty - 8),
+        (tx + 11, ty - 6),
+        (tx + 13, ty),
+        (tx + 11, ty + 6),
+        (tx + 5,  ty + 5),
+        (tx + 1,  ty + 4),
     ]
     draw.polygon(inner_tail, fill=C_BODY)
 
@@ -167,30 +173,35 @@ def dino_frame(draw, ox, oy, state, frame_idx, total_frames):
         draw.ellipse([lx, feet_y-4, lx+10, feet_y+3], fill=C_OUTLN)
         draw.ellipse([lx+1, feet_y-3, lx+9, feet_y+2], fill=C_DARK)
 
-    # --- arms ---
-    arm_w, arm_h = 7, 12
+    # --- arms (ellipse stubs — rounded flipper-style, not triangle fins) ---
+    # Ellipses are 12 × 20 px (outline), centered just outside each body edge.
+    # Raised position shifts 12 px up and 2 px outward to clear the head circle.
+    # Resting bottom (y=64) aligns exactly with tail top — zero overlap.
+    arm_rw, arm_rh = 5, 9   # half-widths for ellipse (outline = +1 each side)
+
     # left arm
-    la_x = body_cx - bw + 2
-    la_y = body_cy - 4
+    la_cx = body_cx - bw - 2   # 24
+    la_cy = body_cy - 4         # 54
     if arm_l_up:
-        pts = [(la_x-4, la_y-arm_h), (la_x, la_y), (la_x-arm_w, la_y)]
-    else:
-        pts = [(la_x-arm_w, la_y+arm_h), (la_x, la_y+3), (la_x-4, la_y+3)]
-    draw.polygon(pts, fill=C_OUTLN)
-    # inner
-    shrink = [(x+(2 if x > la_x-4 else -1), y+(1 if y > la_y else -1)) for x,y in pts]
-    draw.polygon(shrink, fill=C_DARK)
+        la_cx -= 2   # 22 — shift outward so elbow clears head left edge (x=28)
+        la_cy -= 12  # 42
+
+    draw.ellipse([la_cx - arm_rw - 1, la_cy - arm_rh - 1,
+                  la_cx + arm_rw + 1, la_cy + arm_rh + 1], fill=C_OUTLN)
+    draw.ellipse([la_cx - arm_rw, la_cy - arm_rh,
+                  la_cx + arm_rw, la_cy + arm_rh], fill=C_DARK)
 
     # right arm
-    ra_x = body_cx + bw - 2
-    ra_y = body_cy - 4
+    ra_cx = body_cx + bw + 2   # 72
+    ra_cy = body_cy - 4         # 54
     if arm_r_up:
-        pts = [(ra_x+4, ra_y-arm_h), (ra_x, ra_y), (ra_x+arm_w, ra_y)]
-    else:
-        pts = [(ra_x+arm_w, ra_y+arm_h), (ra_x, ra_y+3), (ra_x+4, ra_y+3)]
-    draw.polygon(pts, fill=C_OUTLN)
-    shrink = [(x+(-2 if x > ra_x else 1), y+(1 if y > ra_y else -1)) for x,y in pts]
-    draw.polygon(shrink, fill=C_DARK)
+        ra_cx += 2   # 74 — shift outward so elbow clears head right edge (x=68)
+        ra_cy -= 12  # 42
+
+    draw.ellipse([ra_cx - arm_rw - 1, ra_cy - arm_rh - 1,
+                  ra_cx + arm_rw + 1, ra_cy + arm_rh + 1], fill=C_OUTLN)
+    draw.ellipse([ra_cx - arm_rw, ra_cy - arm_rh,
+                  ra_cx + arm_rw, ra_cy + arm_rh], fill=C_DARK)
 
     # --- success: sparkles at peak ---
     if state == "success" and frame_idx == 2:

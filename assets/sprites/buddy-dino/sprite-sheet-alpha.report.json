@@ -24,7 +24,7 @@
     {
       "state": "idle",
       "frame": 0,
-      "nontransparent_pixels": 2958,
+      "nontransparent_pixels": 3265,
       "x": 0,
       "y": 0,
       "w": 96,
@@ -33,7 +33,7 @@
     {
       "state": "idle",
       "frame": 1,
-      "nontransparent_pixels": 3011,
+      "nontransparent_pixels": 3370,
       "x": 96,
       "y": 0,
       "w": 96,
@@ -42,7 +42,7 @@
     {
       "state": "idle",
       "frame": 2,
-      "nontransparent_pixels": 2958,
+      "nontransparent_pixels": 3265,
       "x": 192,
       "y": 0,
       "w": 96,
@@ -51,7 +51,7 @@
     {
       "state": "idle",
       "frame": 3,
-      "nontransparent_pixels": 2926,
+      "nontransparent_pixels": 3212,
       "x": 288,
       "y": 0,
       "w": 96,
@@ -60,7 +60,7 @@
     {
       "state": "coding",
       "frame": 0,
-      "nontransparent_pixels": 2979,
+      "nontransparent_pixels": 3321,
       "x": 0,
       "y": 96,
       "w": 96,
@@ -69,7 +69,7 @@
     {
       "state": "coding",
       "frame": 1,
-      "nontransparent_pixels": 2993,
+      "nontransparent_pixels": 3328,
       "x": 96,
       "y": 96,
       "w": 96,
@@ -78,7 +78,7 @@
     {
       "state": "coding",
       "frame": 2,
-      "nontransparent_pixels": 2979,
+      "nontransparent_pixels": 3321,
       "x": 192,
       "y": 96,
       "w": 96,
@@ -87,7 +87,7 @@
     {
       "state": "coding",
       "frame": 3,
-      "nontransparent_pixels": 2993,
+      "nontransparent_pixels": 3328,
       "x": 288,
       "y": 96,
       "w": 96,
@@ -96,7 +96,7 @@
     {
       "state": "talking",
       "frame": 0,
-      "nontransparent_pixels": 2958,
+      "nontransparent_pixels": 3265,
       "x": 0,
       "y": 192,
       "w": 96,
@@ -105,7 +105,7 @@
     {
       "state": "talking",
       "frame": 1,
-      "nontransparent_pixels": 2875,
+      "nontransparent_pixels": 3223,
       "x": 96,
       "y": 192,
       "w": 96,
@@ -114,7 +114,7 @@
     {
       "state": "talking",
       "frame": 2,
-      "nontransparent_pixels": 2899,
+      "nontransparent_pixels": 3328,
       "x": 192,
       "y": 192,
       "w": 96,
@@ -123,7 +123,7 @@
     {
       "state": "talking",
       "frame": 3,
-      "nontransparent_pixels": 2899,
+      "nontransparent_pixels": 3328,
       "x": 288,
       "y": 192,
       "w": 96,
@@ -132,7 +132,7 @@
     {
       "state": "success",
       "frame": 0,
-      "nontransparent_pixels": 2958,
+      "nontransparent_pixels": 3265,
       "x": 0,
       "y": 288,
       "w": 96,
@@ -141,7 +141,7 @@
     {
       "state": "success",
       "frame": 1,
-      "nontransparent_pixels": 3447,
+      "nontransparent_pixels": 3534,
       "x": 96,
       "y": 288,
       "w": 96,
@@ -150,7 +150,7 @@
     {
       "state": "success",
       "frame": 2,
-      "nontransparent_pixels": 3133,
+      "nontransparent_pixels": 3415,
       "x": 192,
       "y": 288,
       "w": 96,
@@ -159,7 +159,7 @@
     {
       "state": "success",
       "frame": 3,
-      "nontransparent_pixels": 2958,
+      "nontransparent_pixels": 3265,
       "x": 288,
       "y": 288,
       "w": 96,
