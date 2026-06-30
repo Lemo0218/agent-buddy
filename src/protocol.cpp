@@ -141,6 +141,7 @@ int parseWorld(const char* line, WorldRoom* out, int maxn, int& resetPct, int& r
     out[n].st   = st;
     out[n].fill = r["f"] | 0;
     out[n].cost = r["c"] | 0.0f;
+    out[n].tok  = r["k"] | 0u;
     strncpy(out[n].label, r["p"] | "", sizeof out[n].label - 1);
     out[n].label[sizeof out[n].label - 1] = '\0';
     ++n;

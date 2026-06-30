@@ -53,7 +53,7 @@ bool parseUsage(const char* line, float& cost, uint32_t& tok, int& pct, int& bpc
 
 // Multi-session "world" roster. st: 0 idle, 1 working, 2 waiting, 3 done.
 // fill: 0-100 water level (session usage vs daily budget). cost: session $.
-struct WorldRoom { uint8_t st; uint8_t fill; float cost; char label[12]; };
+struct WorldRoom { uint8_t st; uint8_t fill; float cost; uint32_t tok; char label[12]; };
 // Parse {"cmd":"world","reset":<0-100>,"rmin":<min>,"rooms":[{"st","f","c","p"}]}.
 // Fills the rooms array and the global reset gauge. Returns room count
 // (0..maxn), or -1 if the line is not a world command.

@@ -466,11 +466,6 @@ void drawScene(uint32_t now) {
   T->fillRect(0, gy, W, H-gy, grass);
   T->fillRect(0, gy, W, 3, edge);
   for (int i=0;i<70;i++){ int gx=(i*53+9)%W, gyy=gy+6+((i*37)%(H-gy-36)); T->drawPixel(gx,gyy,edge); }
-  // well — water level shows 5h budget remaining
-  { int wx=22, wy=150; float left=(g_resetMin>=0)?(g_resetMin/300.0f):0.5f; left=left<0?0:(left>1?1:left);
-    T->fillRect(wx-11,wy,22,20,0x6E6E7A); T->fillRect(wx-9,wy+2,18,16,0x222230);
-    int wl=(int)(14*left); T->fillRect(wx-8,wy+16-wl,16,wl,0x2F8FB0);
-    T->fillTriangle(wx-13,wy,wx+13,wy,wx,wy-11,0x8C5A38); }
   { int tx=220, ty=132; T->fillRect(tx-2,ty,4,22,0x6B4A2F);    // tree
     uint32_t lv=lerpC(0x3E7A44,0x223A2A,e);
     T->fillCircle(tx,ty-4,13,lv); T->fillCircle(tx-8,ty+2,9,lv); T->fillCircle(tx+8,ty+2,9,lv); }
@@ -486,8 +481,11 @@ void drawPlot(int cx, int feetY, const WorldRoom& rm, uint32_t now, int idx) {
   T->fillRect(cx-26, sy, 52, 10, 0xC4A476); T->drawRect(cx-26, sy, 52, 10, 0x7A5C38);
   T->setTextDatum(lgfx::middle_center); T->setTextSize(1); T->setTextColor(0x3A2A18);
   T->drawString(rm.label, cx, sy+4);
-  // per-session usage: clear $ number + bar
-  char cs[12]; snprintf(cs, sizeof cs, "$%.0f", rm.cost);
+  // per-session usage: token count + bar
+  char cs[12];
+  if (rm.tok >= 1000000)   snprintf(cs, sizeof cs, "%.1fM", rm.tok / 1e6);
+  else if (rm.tok >= 1000) snprintf(cs, sizeof cs, "%.0fk", rm.tok / 1000.0);
+  else                     snprintf(cs, sizeof cs, "%lu", (unsigned long)rm.tok);
   T->setTextColor(0xF2F8FC); T->drawString(cs, cx, sy+17);
   T->setTextDatum(lgfx::top_left);
   int uw = 52 * (rm.fill>100?100:rm.fill) / 100;

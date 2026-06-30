@@ -1,0 +1,59 @@
+{
+  "version": 1,
+  "kind": "sprite-gen-request",
+  "engine": "component-row",
+  "character": {
+    "id": "buddy-dino",
+    "description": "",
+    "base_image": "base-source.png"
+  },
+  "cell": {
+    "shape": "square",
+    "width": 96,
+    "height": 96,
+    "safe_margin_x": 8,
+    "safe_margin_y": 8,
+    "size": 96,
+    "safe_margin": 8
+  },
+  "chroma_key": {
+    "name": "cyan",
+    "hex": "#00FFFF",
+    "rgb": [
+      0,
+      255,
+      255
+    ],
+    "selection": "auto",
+    "score": 192.37,
+    "min_subject_distance": 186.98
+  },
+  "states": {
+    "idle": {
+      "frames": 4,
+      "fps": 4,
+      "loop": true,
+      "action": "standing, breathing gently, occasional blink"
+    },
+    "coding": {
+      "frames": 4,
+      "fps": 6,
+      "loop": true,
+      "action": "happily tapping with little arms, focused working"
+    },
+    "talking": {
+      "frames": 4,
+      "fps": 5,
+      "loop": true,
+      "action": "waving one arm to get attention, mouth open calling"
+    },
+    "success": {
+      "frames": 4,
+      "fps": 8,
+      "loop": false,
+      "action": "hopping up with both arms raised, joyful"
+    }
+  },
+  "style": "flat cute kawaii, soft green palette, bold dark outline, clean fills on solid magenta background",
+  "motion_phase_guides": false
+}

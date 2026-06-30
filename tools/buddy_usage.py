@@ -94,11 +94,12 @@ def update_fills(budget, daily_cost):
             share = (weights[k] / total_w) if total_w else 0.0
             c = (daily_cost or 0.0) * share
             v["cost"] = round(c, 2)
+            v["tok"]  = int(weights[k])                 # this session's tokens today
             v["fill"] = max(0, min(100, int(c / budget * 100))) if budget else 0
         f.seek(0); f.truncate(); f.write(json.dumps(data)); f.flush()
         rooms = sorted(data.values(), key=lambda v: v["ts"], reverse=True)[:6]
-        return [{"st":r["st"], "p":(r.get("proj") or "")[:10],
-                 "f":int(r.get("fill",0)), "c":round(r.get("cost",0.0),2)} for r in rooms]
+        return [{"st":r["st"], "p":(r.get("proj") or "")[:10], "f":int(r.get("fill",0)),
+                 "c":round(r.get("cost",0.0),2), "k":int(r.get("tok",0))} for r in rooms]
     finally:
         fcntl.flock(f, fcntl.LOCK_UN); f.close()
 

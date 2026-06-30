@@ -51,11 +51,12 @@ def update(sid, proj, transcript, room_state, remove):
         else:
             prev = data.get(sid, {})
             data[sid] = {"st": room_state, "proj": proj, "transcript": transcript or prev.get("transcript",""),
-                         "ts": now, "fill": prev.get("fill", 0), "cost": prev.get("cost", 0.0)}
+                         "ts": now, "fill": prev.get("fill", 0), "cost": prev.get("cost", 0.0),
+                         "tok": prev.get("tok", 0)}
         f.seek(0); f.truncate(); f.write(json.dumps(data)); f.flush()
         rooms = sorted(data.values(), key=lambda v: v["ts"], reverse=True)[:6]
-        return [{"st": r["st"], "p": (r.get("proj") or "")[:10],
-                 "f": int(r.get("fill", 0)), "c": round(r.get("cost", 0.0), 2)} for r in rooms]
+        return [{"st": r["st"], "p": (r.get("proj") or "")[:10], "f": int(r.get("fill", 0)),
+                 "c": round(r.get("cost", 0.0), 2), "k": int(r.get("tok", 0))} for r in rooms]
     finally:
         fcntl.flock(f, fcntl.LOCK_UN); f.close()
 
