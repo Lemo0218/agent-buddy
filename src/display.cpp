@@ -1,5 +1,6 @@
 #include "display.h"
 #include "config.h"
+#include "buddy_sprite.h"
 
 namespace {
 // ASCII face per mood — used only by the no-LCD fallback path.
@@ -386,6 +387,32 @@ void drawTiredFace(int level, const Theme& t, int dy) {
   }
 }
 
+// ---- sprite renderer (atlas stored in flash via buddy_sprite.h) ----------
+static uint16_t s_frameBuf[SPRITE_CELL_W * SPRITE_CELL_H];  // 18 KB, static
+
+static uint8_t spriteFrame(uint8_t stateIdx, uint32_t now) {
+  const SpriteAnim& a = SPRITE_ANIMS[stateIdx];
+  if (!a.loop) return a.frames - 1;  // non-looping: hold last frame
+  uint32_t period = 1000u / a.fps;
+  return (uint8_t)((now / period) % a.frames);
+}
+
+// Blit a sprite frame (transparent pixels skipped) centered at (cx, cy).
+static void blitSprite(int cx, int cy, uint8_t stateIdx, uint8_t frameIdx) {
+  const SpriteAnim& a = SPRITE_ANIMS[stateIdx];
+  uint8_t col = frameIdx % a.frames;
+  for (int py = 0; py < SPRITE_CELL_H; py++) {
+    int srcRow = a.row * SPRITE_CELL_H + py;
+    int srcBase = srcRow * SPRITE_W + col * SPRITE_CELL_W;
+    for (int px = 0; px < SPRITE_CELL_W; px++)
+      s_frameBuf[py * SPRITE_CELL_W + px] = pgm_read_word(&SPRITE_ATLAS[srcBase + px]);
+  }
+  int dx = cx - SPRITE_CELL_W / 2;
+  int dy = cy - SPRITE_CELL_H / 2;
+  T->pushImage(dx, dy, SPRITE_CELL_W, SPRITE_CELL_H,
+               s_frameBuf, (uint16_t)SPRITE_TRANSPARENT);
+}
+
 // ---- multi-session "world" view: a grid of rooms, one mini dino each ----
 // a dino on the soil at gy; it grows up (legs -> arms -> bigger) as that
 // session accumulates context/usage (grow 0..100). st = activity.
@@ -549,9 +576,13 @@ void renderWorld(uint32_t now) {
   drawScene(now);
   int n = (now - g_worldMs < 90000) ? g_numRooms : 0;
   if (n <= 0) {
-    WorldRoom home{}; home.st = 0; home.fill = 0; home.cost = 0;
-    strncpy(home.label, "home", sizeof home.label);
-    drawPlot(W/2, 196, home, now, 0);
+    // No active sessions — featured sprite dino in the scene
+    uint8_t sIdx = SPRITE_ST_IDLE;
+    uint8_t fr   = spriteFrame(sIdx, now);
+    blitSprite(W/2, 178, sIdx, fr);
+    T->setTextColor(0x689A6A); T->setTextDatum(lgfx::middle_center); T->setTextSize(1);
+    T->drawString("Sprout Hollow", W/2, 240);
+    T->setTextDatum(lgfx::top_left);
   } else {
     int rows = (n <= 3) ? 1 : 2;
     int perRow = (n + rows - 1) / rows;
@@ -602,17 +633,15 @@ void Display::begin() {
   useSprite = (canvas.createSprite(W, H) != nullptr);
   T = useSprite ? (lgfx::LovyanGFX*)&canvas : (lgfx::LovyanGFX*)&gfx;
 
-  // boot splash: a happy dino drawn straight to the panel
+  // boot splash: sprite dino centered on screen
   {
     lgfx::LovyanGFX* save = T; T = &gfx;
-    Theme th = themeFor(BuddyMood::Happy);
-    T->fillScreen(th.bg);
-    g_ox = 0;
-    drawHead(th, 0); drawBody(th, 0);
-    drawEyes(BuddyMood::Happy, th, 0, false);
-    drawCheeksMouth(BuddyMood::Happy, th, 0);
-    T->setTextColor(th.head); T->setTextDatum(lgfx::middle_center); T->setTextSize(2);
-    T->drawString("Agent Buddy", CX, 300);
+    T->fillScreen(0x1A3A20);   // dark forest green
+    blitSprite(W/2, H/2 - 24, SPRITE_ST_IDLE, 0);
+    T->setTextColor(0xA8D8A6); T->setTextDatum(lgfx::middle_center); T->setTextSize(2);
+    T->drawString("Agent Buddy", W/2, H/2 + 60);
+    T->setTextSize(1); T->setTextColor(0x689A6A);
+    T->drawString("Sprout Hollow", W/2, H/2 + 82);
     T->setTextDatum(lgfx::top_left);
     T = save;
   }

@@ -1,0 +1,174 @@
+{
+  "characterId": "buddy-dino",
+  "engine": "component-row",
+  "game_input": "sprite-sheet-alpha.png",
+  "degraded_static_fallback": false,
+  "curation_applied": false,
+  "sprite_sheet_alpha": "sprite-sheet-alpha.png",
+  "sprite_sheet_alpha_report": "sprite-sheet-alpha.report.json",
+  "base_image": "base-source.png",
+  "cell": {
+    "shape": "square",
+    "width": 96,
+    "height": 96,
+    "safe_margin_x": 8,
+    "safe_margin_y": 8,
+    "size": 96,
+    "safe_margin": 8
+  },
+  "chroma_key": {
+    "name": "cyan",
+    "hex": "#00FFFF",
+    "rgb": [
+      0,
+      255,
+      255
+    ],
+    "selection": "auto",
+    "score": 192.37,
+    "min_subject_distance": 186.98
+  },
+  "animation": {
+    "cellWidth": 96,
+    "cellHeight": 96,
+    "columns": 4,
+    "rows": {
+      "idle": {
+        "row": 0,
+        "frames": 4,
+        "fps": 4,
+        "loop": true
+      },
+      "coding": {
+        "row": 1,
+        "frames": 4,
+        "fps": 6,
+        "loop": true
+      },
+      "talking": {
+        "row": 2,
+        "frames": 4,
+        "fps": 5,
+        "loop": true
+      },
+      "success": {
+        "row": 3,
+        "frames": 4,
+        "fps": 8,
+        "loop": false
+      }
+    }
+  },
+  "frame_layout": {
+    "sheetWidth": 384,
+    "sheetHeight": 384,
+    "cellWidth": 96,
+    "cellHeight": 96,
+    "rows": {
+      "idle": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 96,
+          "h": 96
+        },
+        {
+          "x": 96,
+          "y": 0,
+          "w": 96,
+          "h": 96
+        },
+        {
+          "x": 192,
+          "y": 0,
+          "w": 96,
+          "h": 96
+        },
+        {
+          "x": 288,
+          "y": 0,
+          "w": 96,
+          "h": 96
+        }
+      ],
+      "coding": [
+        {
+          "x": 0,
+          "y": 96,
+          "w": 96,
+          "h": 96
+        },
+        {
+          "x": 96,
+          "y": 96,
+          "w": 96,
+          "h": 96
+        },
+        {
+          "x": 192,
+          "y": 96,
+          "w": 96,
+          "h": 96
+        },
+        {
+          "x": 288,
+          "y": 96,
+          "w": 96,
+          "h": 96
+        }
+      ],
+      "talking": [
+        {
+          "x": 0,
+          "y": 192,
+          "w": 96,
+          "h": 96
+        },
+        {
+          "x": 96,
+          "y": 192,
+          "w": 96,
+          "h": 96
+        },
+        {
+          "x": 192,
+          "y": 192,
+          "w": 96,
+          "h": 96
+        },
+        {
+          "x": 288,
+          "y": 192,
+          "w": 96,
+          "h": 96
+        }
+      ],
+      "success": [
+        {
+          "x": 0,
+          "y": 288,
+          "w": 96,
+          "h": 96
+        },
+        {
+          "x": 96,
+          "y": 288,
+          "w": 96,
+          "h": 96
+        },
+        {
+          "x": 192,
+          "y": 288,
+          "w": 96,
+          "h": 96
+        },
+        {
+          "x": 288,
+          "y": 288,
+          "w": 96,
+          "h": 96
+        }
+      ]
+    }
+  }
+}

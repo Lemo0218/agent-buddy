@@ -1,0 +1,278 @@
+{
+  "ok": true,
+  "engine": "component-row",
+  "run_dir": "/home/mh/agent-buddy-product-brief/firmware/assets/sprites/buddy-dino",
+  "cell": {
+    "shape": "square",
+    "width": 96,
+    "height": 96,
+    "safe_margin_x": 8,
+    "safe_margin_y": 8,
+    "size": 96,
+    "safe_margin": 8
+  },
+  "chroma_key": {
+    "name": "cyan",
+    "hex": "#00FFFF",
+    "rgb": [
+      0,
+      255,
+      255
+    ],
+    "selection": "auto",
+    "score": 192.37,
+    "min_subject_distance": 186.98
+  },
+  "rows": [
+    {
+      "state": "idle",
+      "frames": 4,
+      "method": "components",
+      "files": [
+        "frames/idle/frame-0.png",
+        "frames/idle/frame-1.png",
+        "frames/idle/frame-2.png",
+        "frames/idle/frame-3.png"
+      ],
+      "frame_records": [
+        {
+          "index": 0,
+          "nontransparent_pixels": 2958,
+          "bbox": [
+            17,
+            8,
+            79,
+            88
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 1,
+          "nontransparent_pixels": 3011,
+          "bbox": [
+            16,
+            8,
+            79,
+            88
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 2,
+          "nontransparent_pixels": 2958,
+          "bbox": [
+            17,
+            8,
+            79,
+            88
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 3,
+          "nontransparent_pixels": 2926,
+          "bbox": [
+            17,
+            8,
+            78,
+            88
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        }
+      ],
+      "ok": true
+    },
+    {
+      "state": "coding",
+      "frames": 4,
+      "method": "components",
+      "files": [
+        "frames/coding/frame-0.png",
+        "frames/coding/frame-1.png",
+        "frames/coding/frame-2.png",
+        "frames/coding/frame-3.png"
+      ],
+      "frame_records": [
+        {
+          "index": 0,
+          "nontransparent_pixels": 2979,
+          "bbox": [
+            17,
+            8,
+            79,
+            88
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 1,
+          "nontransparent_pixels": 2993,
+          "bbox": [
+            17,
+            8,
+            79,
+            88
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 2,
+          "nontransparent_pixels": 2979,
+          "bbox": [
+            17,
+            8,
+            79,
+            88
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 3,
+          "nontransparent_pixels": 2993,
+          "bbox": [
+            17,
+            8,
+            79,
+            88
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        }
+      ],
+      "ok": true
+    },
+    {
+      "state": "talking",
+      "frames": 4,
+      "method": "components",
+      "files": [
+        "frames/talking/frame-0.png",
+        "frames/talking/frame-1.png",
+        "frames/talking/frame-2.png",
+        "frames/talking/frame-3.png"
+      ],
+      "frame_records": [
+        {
+          "index": 0,
+          "nontransparent_pixels": 2958,
+          "bbox": [
+            17,
+            8,
+            79,
+            88
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 1,
+          "nontransparent_pixels": 2875,
+          "bbox": [
+            18,
+            8,
+            77,
+            88
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 2,
+          "nontransparent_pixels": 2899,
+          "bbox": [
+            18,
+            8,
+            77,
+            88
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 3,
+          "nontransparent_pixels": 2899,
+          "bbox": [
+            18,
+            8,
+            77,
+            88
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        }
+      ],
+      "ok": true
+    },
+    {
+      "state": "success",
+      "frames": 4,
+      "method": "components",
+      "files": [
+        "frames/success/frame-0.png",
+        "frames/success/frame-1.png",
+        "frames/success/frame-2.png",
+        "frames/success/frame-3.png"
+      ],
+      "frame_records": [
+        {
+          "index": 0,
+          "nontransparent_pixels": 2958,
+          "bbox": [
+            17,
+            8,
+            79,
+            88
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 1,
+          "nontransparent_pixels": 3447,
+          "bbox": [
+            14,
+            8,
+            81,
+            88
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 2,
+          "nontransparent_pixels": 3133,
+          "bbox": [
+            11,
+            10,
+            84,
+            85
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 3,
+          "nontransparent_pixels": 2958,
+          "bbox": [
+            17,
+            8,
+            79,
+            88
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        }
+      ],
+      "ok": true
+    }
+  ],
+  "errors": [],
+  "warnings": []
+}
